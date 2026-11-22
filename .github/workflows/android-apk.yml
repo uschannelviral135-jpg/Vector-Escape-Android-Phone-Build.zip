@@ -1,4 +1,5 @@
 
+
 name: Build Puzzle Arrow APK
 
 on:
@@ -38,12 +39,18 @@ jobs:
 
       - name: Install dependencies
         working-directory: project
-        run: npm install
+        run: |
+          npm install
+          CAP_VERSION=$(node -p "require('./node_modules/@capacitor/core/package.json').version")
+          npm install --no-save "@capacitor/android@$CAP_VERSION"
 
       - name: Build APK
         working-directory: project
         run: |
           npm run build
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
           npx cap sync android
           cd android
           chmod +x gradlew
